@@ -16,10 +16,12 @@ private:
 
 public:
     Book(int id, string bookName, string auth, string cat);
+    Book();
     string   getTitle();
     string   getAuthor();
     string   getCategory();
     int      getId();
+
     void     setPersonPtr(Person * ptr);
     Person * getPersonPtr();
 };
