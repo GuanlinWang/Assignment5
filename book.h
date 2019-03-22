@@ -1,28 +1,32 @@
-//begin book.h
-#ifndef BOOK_H
-#define BOOK_H
+#include "book.h"
 
-#include <string>
-#include "person.h"
+Book::Book(int id, string bookName, string auth, string cat) {
+    bookID=id;
+    author=auth;
+    category=cat;
+    title=bookName;
+}
+Book::Book()
+{}
 
-class Book
-{
-private:
-    string   title;
-    string   author;
-    string   category;
-    int      bookID;
-    Person * personPtr = nullptr;
+string Book::getTitle() {
+    return title;
+}
 
-public:
-    Book(int id, string bookName, string auth, string cat);
-    Book();
-    string   getTitle();
-    string   getAuthor();
-    string   getCategory();
-    int      getId();
+string Book::getAuthor() {
+    return author;
+}
 
-    void     setPersonPtr(Person * ptr);
-    Person * getPersonPtr();
-};
-#endif // end book.h
+string Book::getCategory() {
+    return category;
+}
+
+int Book::getId() {
+    return bookID;
+}
+void Book::setPersonPtr(Person * ptr) {
+} // complete
+
+Person * Book::getPersonPtr() {
+    return nullptr; // complete
+}
