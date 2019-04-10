@@ -3,6 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include<sstream>
 #include <vector>
 #include "person.cpp"
 #include "book.cpp"
@@ -23,53 +24,68 @@ void printMenu() {
 }
 
 
-void readBooks(vector<Book *> & myBooks) {
-  string name,auth,cat,skip;
-  int id;
-  fstream file;
-
-   file.open("books.txt");
-while(true)
+void readBooks(vector<Book *> & myBooks)
 {
-  file>>id;
-  file.clear();
-  getline(file,name);
-  file.clear();
-  getline(file,auth);
-  file>>cat;
+  int bookId=1;
+  string tempId;
+  string title="2";
+  string author="2";
+  string category="4";
+  ifstream file;
+  file.open("books.txt");
 
+ while(true)
+ {
+  getline(file,tempId);
+  getline(file, title);
+  getline(file,author);
+  getline(file,category);
+  file.ignore();
 
-
-cout<<id<<endl;
-//cout<<name<<endl;
-//cout<<auth<<endl;
-//cout<<cat<<endl;
-  if(file.peek(),file.eof())
+  stringstream geek(tempId);
+  geek>>bookId;
+  Book * book=new Book(bookId,title,author,category);
+  myBooks.push_back(book);
+  if (file.peek(),file.eof())
   {break;}
-
-
-}
-
-          //  Book* temp=new Book(id,name,auth,cat);
-          // cout<<temp->getTitle()<<endl<<temp->getId()<<endl<<temp->getAuthor()
-          //  <<endl<<temp->getCategory()<<endl;
-
-        //   myBooks.emplace_back(temp);
-
+ }
+ file.close();
 
 }
 
-// int readPersons(vector<Person *> & myCardholders) {
-//     return 0;
-// }
+ void readPersons(vector<Person *> & myCardholders) {
+     int cardNum;
+     bool isAct;
+     string first,last;
+     ifstream file;
+     file.open("persons.txt");
+
+     while(true)
+     {
+     file>>cardNum>>isAct>>first>>last;
+     file.ignore();
+     if(file.peek(),file.eof())
+     {break;}
+      Person * cardHolder=new Person(cardNum,isAct,first,last);
+      myCardholders.push_back(cardHolder);
+
+    }
+    file.close();
+
+ }
 //
 // void readRentals(vector<Book *> & myBooks, vector<Person *> myCardholders) {
 //     return;
 // }
 //
-// void openCard(vector<Person *> & myCardholders, int nextID) {
-//     return;
-// }
+ void openCard(vector<Person *> & myCardholders, int nextID)
+  {
+    string first,last;
+    cout<<"Please enter the first name: ";
+    cin>>first;
+    cout<<"Please enter the last name: ";
+    cin>>last;
+  }
 //
 // Book * searchBook(vector<Book *> myBooks, int id) {
 //     return nullptr;
@@ -80,7 +96,8 @@ int main()
 {
     vector<Book *> books;
     vector<Person *> cardholders;
-
+   readBooks(books);
+   readPersons(cardholders);
     int choice;
     do
     {
@@ -92,7 +109,7 @@ int main()
         {
             case 1:
                 // Book checkout
-                readBooks(books);
+  
                 break;
 
             case 2:
@@ -101,6 +118,14 @@ int main()
 
             case 3:
                 // View all available books
+                for (int i =0; i<books.size();i++)
+                {
+                cout<<"Book ID: "<<books.at(i)->getId()<<endl;
+                cout<<"Title: "<<books.at(i)->getTitle()<<endl;
+                cout<<"Author: "<<books.at(i)->getAuthor()<<endl;
+                cout<<"Category: "<<books.at(i)->getCategory()<<endl;
+                cout<<endl;
+              }
                 break;
 
             case 4:
