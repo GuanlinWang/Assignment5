@@ -1,23 +1,26 @@
 #include "book.h"
 
 Book::Book(int id, string bookName, string auth, string cat) {
-    // complete constructor
+    bookID=id;
+    author=auth;
+    category=cat;
+    title=bookName;
 }
 
 string Book::getTitle() {
-    return ""; // complete
+    return title;
 }
 
 string Book::getAuthor() {
-    return ""; // complete
+    return author;
 }
 
 string Book::getCategory() {
-    return ""; // complete
+    return category;
 }
 
 int Book::getId() {
-    return 0; // complete
+    return bookID;
 }
 void Book::setPersonPtr(Person * ptr) {
 } // complete
