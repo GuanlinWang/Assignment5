@@ -4,6 +4,7 @@
 #include <fstream>
 #include <string>
 #include<sstream>
+#include<algorithm>
 #include <vector>
 #include "person.cpp"
 #include "book.cpp"
@@ -73,11 +74,97 @@ void readBooks(vector<Book *> & myBooks)
     file.close();
 
  }
+
+ void bookCheckout(vector<Book*> &myBooks, vector<Person*> &myCardholders)
+ {
+   int enteredID,bookID;
+   int pos1,pos2;
+   bool found=false;
+   cout<<"Please enter the card ID: "; cin>>enteredID;
+   for (int i=0; i<myCardholders.size();i++)
+   {
+     if(myCardholders.at(i)->getId()==enteredID)
+     {
+       found=true;
+       pos1=i;
+       break;
+     }
+   }
+   if(found==false||myCardholders.at(pos1)->isActive()==0)
+   {
+     cout<<"Card ID not found"<<endl;
+   }
+   else if(found==true)
+  {
+    cout<<"Cardholder: "<< myCardholders.at(pos1)->fullName()<<endl;
+    cout<<"Please enter the book ID: "; cin>>bookID;
+    for (int i=0; i<myBooks.size();i++)
+    {
+      if(myBooks.at(i)->getId()==bookID)
+      {
+        pos2=i;
+        found=true;
+        break;
+      }
+      else{found=false;}
+    }
+    if (found==false)
+    {
+      cout<<"Book ID not found"<<endl;
+    }
+    else if(found==true)
+    {
+      if(myBooks.at(pos2)->getPersonPtr()!=nullptr)
+      {
+        cout<<"Book already checked out"<<endl;
+      }
+      else{
+      cout<<"Title: "<<myBooks.at(pos2)->getTitle()<<endl;
+
+      myBooks.at(pos2)->setPersonPtr(myCardholders.at(pos1));
+      cout<<"Rental Completed"<<endl;
+     }
+    }
+  }
+
+ }
+void bookReturn(vector<Book*> &myBooks, vector<Person*> &myCardholders)
+{
+  int  bookID,pos;
+  bool found=false;
+  cout<<"Please enter the book ID to return: ";cin>>bookID;
+  for (int i=0; i<myBooks.size();i++)
+  {
+    if(myBooks.at(i)->getId()==bookID)
+    {
+      pos=i;
+      found=true;
+      break;
+    }
+}
+if (found==false)
+{
+  cout<<"Book ID not found"<<endl;
+}
+else
+{
+  cout<<"Title: "<<myBooks.at(pos)->getTitle()<<endl;
+  myBooks.at(pos)->setPersonPtr(nullptr);
+  cout<<"Return Completed"<<endl;
+}
+}
+
 //
 // void readRentals(vector<Book *> & myBooks, vector<Person *> myCardholders) {
 //     return;
 // }
 //
+//
+// Book * searchBook(vector<Book *> myBooks, int id) {
+//     return nullptr;
+// }
+// */
+
  void openCard(vector<Person *> & myCardholders, int nextID)
   {
     string first,last;
@@ -85,12 +172,12 @@ void readBooks(vector<Book *> & myBooks)
     cin>>first;
     cout<<"Please enter the last name: ";
     cin>>last;
+    Person *newCard=new Person(nextID,true,first,last);
+    myCardholders.push_back(newCard);
+    cout<<"Card ID "<<nextID<<" active"<<endl;
+    cout<<"Cardholder: "<<first<<" "<<last;
+
   }
-//
-// Book * searchBook(vector<Book *> myBooks, int id) {
-//     return nullptr;
-// }
-// */
 
 int main()
 {
@@ -109,11 +196,12 @@ int main()
         {
             case 1:
                 // Book checkout
-  
+               bookCheckout(books,cardholders);
                 break;
 
             case 2:
                 // Book return
+                bookReturn(books,cardholders);
                 break;
 
             case 3:
@@ -138,6 +226,9 @@ int main()
 
             case 6:
                 // Open new library card
+                int newID;
+                newID=cardholders.at(cardholders.size()-1)->getId()+1;
+                openCard(cardholders,newID);
                 break;
 
             case 7:
