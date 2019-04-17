@@ -51,6 +51,30 @@ void readBooks(vector<Book *> & myBooks)
   {break;}
  }
  file.close();
+}
+
+void overWrite(vector<Book *> & myBooks, vector<Person *> & myCardholders)
+{
+  ofstream file;
+  file.open("persons.txt");
+  for (int i =0; i<myCardholders.size();i++)
+  {
+    file<<myCardholders.at(i)->getId()<<" "<<myCardholders.at(i)->isActive()
+    <<" "<<myCardholders.at(i)->getFirstName()<<" "<<myCardholders.at(i)->
+    getLastName()<<endl;
+  }
+  file.close();
+
+  file.open("rentals.txt");
+  for(int i=0; i<myBooks.size();i++)
+  {
+    if (myBooks.at(i)->getPersonPtr()!=nullptr)
+    {
+      file<<myBooks.at(i)->getId()<<" "<<myBooks.at(i)->getPersonPtr()->getId()
+      <<endl;
+    }
+  }
+  file.close();
 
 }
 
@@ -154,30 +178,165 @@ else
 }
 }
 
-//
-// void readRentals(vector<Book *> & myBooks, vector<Person *> myCardholders) {
-//     return;
-// }
-//
-//
-// Book * searchBook(vector<Book *> myBooks, int id) {
-//     return nullptr;
-// }
-// */
 
- void openCard(vector<Person *> & myCardholders, int nextID)
+ void readRentals(vector<Book *> & myBooks, vector<Person *> myCardholders)
+ {
+   int bookId, personId,bookPos,personPos;
+   ifstream file;
+   file.open("rentals.txt");
+   while(true)
+   {
+     file>>bookId>>personId;
+     for (int i =0; i<myBooks.size();i++)
+     {
+       if (myBooks.at(i)->getId()==bookId)
+       {
+         bookPos=i;
+         break;
+       }
+     }
+     for (int i=0;i<myCardholders.size();i++)
+     {
+       if (myCardholders.at(i)->getId()==personId)
+       {
+         personPos=i;
+         break;
+       }
+     }
+
+     myBooks.at(bookPos)->setPersonPtr(myCardholders.at(personPos));
+
+   if(file.peek(),file.eof())
+   {break;}
+
+  }
+  file.close();
+ }
+
+
+ void openCard(vector<Person *> & myCardholders)
   {
     string first,last;
+    int newID,temp;
     cout<<"Please enter the first name: ";
     cin>>first;
     cout<<"Please enter the last name: ";
     cin>>last;
-    Person *newCard=new Person(nextID,true,first,last);
-    myCardholders.push_back(newCard);
-    cout<<"Card ID "<<nextID<<" active"<<endl;
+    temp=myCardholders.size()-1;
+    newID=myCardholders.at(temp)->getId();
+    Person *newCard=new Person(newID+1,true,first,last);
+     myCardholders.push_back(newCard);
+    cout<<"Card ID "<<newID+1<<" active"<<endl;
     cout<<"Cardholder: "<<first<<" "<<last;
 
   }
+  void closeCard(vector<Person *> & myCardholders)
+   {
+     char choice;
+     int id,pos;
+     bool found=false;
+     cout<<"Please enter the card ID: ";
+     cin>>id;
+     for (int i =0; i<myCardholders.size();i++)
+     {
+       if(myCardholders.at(i)->getId()==id)
+       {
+         found=true;
+         pos=i;
+         break;
+       }
+     }
+     if(found==false)
+     {
+       cout<<"Card ID not found;"<<endl;
+     }
+     else
+     {
+       cout<<"Cardholder: "<<myCardholders.at(pos)->fullName()<<endl;
+       if (myCardholders.at(pos)->isActive()==false)
+       {
+         cout<<"Card ID is already inactive";
+       }
+       else
+       {
+         cout<<"Are you sure you want to deactivate card(y/n)? ";
+          cin>>choice;
+         if (choice=='y'||choice=='Y')
+         {
+           myCardholders.at(pos)->setActive(false);
+           cout<<"Card ID deactivated"<<endl;
+         }
+       }
+     }
+   }
+
+   void allRentals(vector<Book *> & myBooks)
+   {
+     bool anyRental=false;
+     for (int i =0;i<myBooks.size();i++)
+     {
+       if (myBooks.at(i)->getPersonPtr()!=nullptr)
+        {
+          anyRental=true;
+          cout<<"Book ID: "<<myBooks.at(i)->getId()<<endl;
+          cout<<"Title: "<<myBooks.at(i)->getTitle()<<endl;
+          cout<<"Author: "<<myBooks.at(i)->getAuthor()<<endl;
+          cout<<"Cardholder: "<<myBooks.at(i)->getPersonPtr()->fullName()<<endl;
+          cout<<"Card ID: "<<myBooks.at(i)->getPersonPtr()->getId()<<endl;
+          cout<<endl;
+        }
+     }
+     if (anyRental==false)
+     {
+       cout<<"No outstanding rentals"<<endl;
+     }
+   }
+
+   void personRentals(vector<Book *> & myBooks, vector<Person *> myCardholders)
+   {
+     int cardId,pos1;
+     bool noBooks=true;
+     bool found=false;
+     cout<<"Please enter the card ID: ";
+     cin>>cardId;
+     for (int i=0; i<myCardholders.size();i++)
+     {
+       if(myCardholders.at(i)->getId()==cardId)
+       {
+         found=true;
+         pos1=i;
+         break;
+       }
+     }
+     if(found==false||myCardholders.at(pos1)->isActive()==0)
+     {
+       cout<<"Card ID not found"<<endl;
+     }
+     else
+     {
+       cout<<"Cardholder: "<<myCardholders.at(pos1)->fullName()<<endl;
+       for (int i =0; i<myBooks.size();i++)
+       {
+         if (myBooks.at(i)->getPersonPtr()!=nullptr)
+         {
+          if (myBooks.at(i)->getPersonPtr()->getId()==cardId)
+          {
+            noBooks=false;
+            cout<<"Book ID: "<<myBooks.at(i)->getId()<<endl;
+            cout<<"Title: "<<myBooks.at(i)->getTitle()<<endl;
+            cout<<"Author: "<<myBooks.at(i)->getAuthor()<<endl;
+            cout<<endl;
+          }
+       }
+
+       }
+       if (noBooks==true)
+      {
+        cout<<"No books currently checkout"<<endl;
+      }
+     }
+
+   }
 
 int main()
 {
@@ -185,6 +344,7 @@ int main()
     vector<Person *> cardholders;
    readBooks(books);
    readPersons(cardholders);
+   readRentals(books,cardholders);
     int choice;
     do
     {
@@ -218,25 +378,27 @@ int main()
 
             case 4:
                 // View all outstanding rentals
+                allRentals(books);
                 break;
 
             case 5:
                 // View outstanding rentals for a cardholder
+                personRentals(books,cardholders);
                 break;
 
             case 6:
                 // Open new library card
-                int newID;
-                newID=cardholders.at(cardholders.size()-1)->getId()+1;
-                openCard(cardholders,newID);
+                openCard(cardholders);
                 break;
 
             case 7:
                 // Close library card
+                closeCard(cardholders);
                 break;
 
             case 8:
                 // Must update records in files here before exiting the program
+               overWrite(books,cardholders);
                 break;
 
             default:
